@@ -71,8 +71,8 @@ def callback():
 
 @auth_blueprint.route('/profile')
 def profile():
-    token = "EzhiHhQvLEJszFUuhhwHPIcf53U5nx"
-    # print("Token: ", token)
+    token = session.get('token')
+        # print("Token: ", token)
     logging.debug(f"Token: {token}")
     if not token:
         return redirect(url_for('auth.login'))
