@@ -152,3 +152,33 @@ def delete_summary():
     return jsonify({'error': 'Summary not found or not authorized'}), 404
 
 
+
+def get_user_from_token(token):
+    headers = {'Authorization': f'Bearer {token}'}
+    response = requests.get('https://discord.com/api/users/@me', headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+def authenticate(token, user_id):
+    user_info = get_user_from_token(token)
+    if user_info and user_info['id'] == user_id:
+        return user_info
+    return None
+
+@crud_blueprint.route('/is_authenticated', methods=['GET'])
+def is_authenticated():
+    user_id = request.headers.get('ID')
+    logging.debug(f"User ID: {user_id}")
+    user = users_collection.find_one({'id': user_id})
+    tokenkwa = user.get('token')
+    token = tokenkwa.get('access_token')
+    logging.warning(token)
+    if not token or not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user_info = authenticate(token, user_id)
+    if not user_info:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    return jsonify({'message': 'User is authenticated', 'user': user_info}), 200
