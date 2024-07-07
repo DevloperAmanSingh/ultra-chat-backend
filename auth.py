@@ -82,6 +82,7 @@ def profile():
     return jsonify(user_info)
 
 
+
 def authenticate(token):
     headers = {'Authorization': f'Bearer {token}'}
     response = requests.get('https://discord.com/api/users/@me', headers=headers)
