@@ -171,6 +171,8 @@ def is_authenticated():
     user_id = request.headers.get('ID')
     logging.debug(f"User ID: {user_id}")
     user = users_collection.find_one({'id': user_id})
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
     tokenkwa = user.get('token')
     token = tokenkwa.get('access_token')
     logging.warning(token)
